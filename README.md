@@ -1,7 +1,9 @@
-<t align="center"> 
-# Iowa State University self driving car
+<div align="center">
 
- <p align="center">
+# Iowa State University self driving car
+</div>
+
+<p align="center">
   <img width="200" height="200" src="images/ISU.jpg"> 
   <img width="200" height="170" src="images/IMG_6933.JPG">
     <img width="200" height="175" src="images/reactor.png">
@@ -12,8 +14,9 @@
 </p> -->
 
 ---
-<t align="left"> 
+
 # TODO:
+
 - [ ] Fix the battery issue of the car
 - [x]   Setting up ROS and Pacmod related packages on the new Ubuntu laptop
 - [ ]    Testing the drive by wire system of the car
