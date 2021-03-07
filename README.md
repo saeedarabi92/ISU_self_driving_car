@@ -25,11 +25,12 @@
   - [ ]    Checking the CAN messages and confirming their correctness
 
 - [ ]   Setting up gazebo simulation
-  - [ ]   Setting up a plane world gazebo simulation
-  - [ ]   Spawning the car representative (simple ackerman steering model or the actual GEM polaris model)
-  - [ ]   Testing the simulator by publishing the throttle and steering commands
+  - [x]   Setting up a plane world gazebo simulation
+  - [x]   Spawning the car representative (simple ackerman steering model or the actual GEM polaris model)
+  - [x]   Testing the simulator by publishing the throttle and steering commands
   - [ ]   Adding GPS plugin in the Gazebo
   - [ ]   Adding IMU plugin in the Gazebo
   - [ ]   Sensor fusion for localization
   - [ ]   Adding the camera model
-  - [ ]   Adding the Lidar model
+  - [x]   Adding the Lidar model
+  - [ ]   Correct the vehicle model
