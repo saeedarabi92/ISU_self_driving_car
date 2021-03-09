@@ -20,39 +20,45 @@ import tf
 import math
 import subprocess
 import os
+import numpy as np
 
 
 global goal_list
-goal_list = [(10,0), (10,10), (0,10), (0,0)]
+goal_list = [(10, 10, 0), (30, 40, np.pi), (40, 0, np.pi), (0, 0, 0)]
+
+
 def get_goal(idx):
     goal = PoseStamped()
     goal.header.seq = 1
     goal.header.stamp = rospy.Time.now()
     goal.header.frame_id = "/odom"
-    goal.pose.position.x = goal_list[idx][0] 
+    goal.pose.position.x = goal_list[idx][0]
     goal.pose.position.y = goal_list[idx][1]
     goal.pose.position.z = 0.0
-
-    goal.pose.orientation.x = 0.0
-    goal.pose.orientation.y = 0.0
-    goal.pose.orientation.z = 0.0
-    goal.pose.orientation.w = 0.0
+    quaternion = tf.transformations.quaternion_from_euler(
+        0, 0, goal_list[idx][2])
+    goal.pose.orientation.x = quaternion[0]
+    goal.pose.orientation.y = quaternion[1]
+    goal.pose.orientation.z = quaternion[2]
+    goal.pose.orientation.w = quaternion[3]
     return goal
+
 
 def odom_callback(data):
     global x, y, yaw
-    qx=data.pose.pose.orientation.x
-    qy=data.pose.pose.orientation.y
-    qz=data.pose.pose.orientation.z
-    qw=data.pose.pose.orientation.w
-    quaternion = (qx,qy,qz,qw)
+    qx = data.pose.pose.orientation.x
+    qy = data.pose.pose.orientation.y
+    qz = data.pose.pose.orientation.z
+    qw = data.pose.pose.orientation.w
+    quaternion = (qx, qy, qz, qw)
     euler = tf.transformations.euler_from_quaternion(quaternion)
     yaw = euler[2]
     x = data.pose.pose.position.x
     y = data.pose.pose.position.y
-    
+
+
 def distance_to_goal(x_c, y_c, x_g, y_g):
-    return math.sqrt( (x_c - x_g)**2 + (y_c - y_g)**2 )
+    return math.sqrt((x_c - x_g)**2 + (y_c - y_g)**2)
 
 
 def mission():
@@ -60,7 +66,7 @@ def mission():
     pub = rospy.Publisher('/goal', PoseStamped, queue_size=1)
     sub_odom = rospy.Subscriber('/odom', Odometry, odom_callback)
     rospy.init_node('mission', anonymous=True)
-    rate = rospy.Rate(5) # 10hz
+    rate = rospy.Rate(5)  # 10hz
     goal_idx = 0
     laps_num = 2
     rospy.loginfo("Waiting 5 seconds to load all the nodes...!")
@@ -70,6 +76,7 @@ def mission():
             goal = get_goal(i)
             x_g = goal.pose.position.x
             y_g = goal.pose.position.y
+            yaw_g = goal_list[i][2]
             pub.publish(goal)
             distance = distance_to_goal(x, y, x_g, y_g)
             while distance > 1:
@@ -77,7 +84,9 @@ def mission():
             print "Approaching to the next goal..."
             rospy.sleep(1)
     rospy.loginfo("Mission ended. Killing all the ROS nodes...!")
-    os.system("rosnode kill --all & killall -9 roscore & killall -9 rosmaster & killall -9 rviz & pkill -9 python")
+    os.system(
+        "rosnode kill --all & killall -9 roscore & killall -9 rosmaster & killall -9 rviz & pkill -9 python")
+
 
 if __name__ == '__main__':
     try:
