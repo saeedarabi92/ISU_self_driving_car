@@ -6,13 +6,37 @@
 #    By: saeed <arabi@iastate.edu>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/08 18:24:56 by saeed             #+#    #+#              #
-#    Updated: 2021/03/08 19:55:39 by saeed            ###   ########.fr        #
+#    Updated: 2021/03/09 11:40:50 by saeed            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 
 import numpy as np
 import math
+import dubins
+
+
+class DUBINS_PATH_PLANNER:
+
+    def __init__(self, x_current, y_current, yaw_current, x_goal, y_goal, yaw_goal):
+        self.x_current = x_current
+        self.y_current = y_current
+        self.yaw_current = yaw_current
+        self.x_goal = x_goal
+        self.y_goal = y_goal
+        self.yaw_goal = yaw_goal
+        self.turning_radius = 5.
+        self.step_size = 0.05
+
+    def get_path(self):
+        q0 = (self.x_current, self.y_current, self.yaw_current)
+        q1 = (self.x_goal, self.y_goal, self.yaw_goal)
+        path = dubins.shortest_path(q0, q1, self.turning_radius)
+        configurations, _ = path.sample_many(self.step_size)
+        return configurations
+
+    def get_path_info(self):
+        return [(i, j, k, None) for i, j, k in self.get_path()]
 
 
 class SIMPLE_PATH_PLANNER:
