@@ -1,5 +1,17 @@
 #!/usr/bin/env python
 
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    mission.py                                         :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: saeed <arabi@iastate.edu>                  +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2021/03/08 20:11:26 by saeed             #+#    #+#              #
+#    Updated: 2021/03/08 20:11:26 by saeed            ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseStamped
 import rospy
@@ -7,11 +19,11 @@ from std_msgs.msg import String
 import tf
 import math
 import subprocess
+import os
 
 
 global goal_list
-goal_list = [(20,0), (20,10), (0,10), (0,0)]
-
+goal_list = [(10,0), (10,10), (0,10), (0,0)]
 def get_goal(idx):
     goal = PoseStamped()
     goal.header.seq = 1
@@ -44,27 +56,28 @@ def distance_to_goal(x_c, y_c, x_g, y_g):
 
 
 def mission():
+
     pub = rospy.Publisher('/goal', PoseStamped, queue_size=1)
     sub_odom = rospy.Subscriber('/odom', Odometry, odom_callback)
     rospy.init_node('mission', anonymous=True)
     rate = rospy.Rate(5) # 10hz
     goal_idx = 0
-    laps_num = 1
+    laps_num = 2
+    rospy.loginfo("Waiting 5 seconds to load all the nodes...!")
+    rospy.sleep(5)
     for j in range(laps_num):
         for i in range(len(goal_list)):
             goal = get_goal(i)
             x_g = goal.pose.position.x
             y_g = goal.pose.position.y
-            caller = 'rosrun gem_control pure_persuit.py'
-            subprocess.Popen(caller,shell=True)
-            print "Wait 3 seconds to load the nodes!"
-            rospy.sleep(3)
             pub.publish(goal)
             distance = distance_to_goal(x, y, x_g, y_g)
             while distance > 1:
                 distance = distance_to_goal(x, y, x_g, y_g)
-            print "Approaching to the second goal..."
-            rospy.sleep(3)
+            print "Approaching to the next goal..."
+            rospy.sleep(1)
+    rospy.loginfo("Mission ended. Killing all the ROS nodes...!")
+    os.system("rosnode kill --all & killall -9 roscore & killall -9 rosmaster & killall -9 rviz & pkill -9 python")
 
 if __name__ == '__main__':
     try:
