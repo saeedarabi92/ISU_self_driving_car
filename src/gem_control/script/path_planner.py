@@ -19,7 +19,7 @@ from visualization_msgs.msg import MarkerArray, Marker
 import tf
 from nav_msgs.msg import Odometry
 import math
-from helper.path_planning_helper import SIMPLE_PATH_PLANNER
+from helper.path_planning_helper import SIMPLE_PATH_PLANNER, DUBINS_PATH_PLANNER
 
 
 class PATH_PLANNER():
@@ -57,9 +57,14 @@ class PATH_PLANNER():
         output:
         1. Path information: an array consists of tupels of referenced values, self.path: [(x1, y1, theta1, v1), (x2, y2, theta2, v2), ...]
         """
-        simple_path = SIMPLE_PATH_PLANNER(
+
+        # simple_path = SIMPLE_PATH_PLANNER(
+        #     self.x_current, self.y_current, self.yaw_current, self.x_goal, self.y_goal, self.yaw_goal)
+        # self.path = simple_path.get_path_info()
+
+        dubins_path = DUBINS_PATH_PLANNER(
             self.x_current, self.y_current, self.yaw_current, self.x_goal, self.y_goal, self.yaw_goal)
-        self.path = simple_path.get_path_info()
+        self.path = dubins_path.get_path_info()
 
     def callback_odom(self, data):
         qx = data.pose.pose.orientation.x
@@ -125,12 +130,11 @@ class PATH_PLANNER():
         return path
 
     def pub_path_update(self, event=None):
-        if self.got_new_goal: 
+        if self.got_new_goal:
             self.planning_computation()
             path = self.get_maker_path()
             self.pub_path.publish(path)
             self.got_new_goal = False
-
 
     def run(self):
         rospy.Timer(rospy.Duration(1. / self.pub_path_rate),
