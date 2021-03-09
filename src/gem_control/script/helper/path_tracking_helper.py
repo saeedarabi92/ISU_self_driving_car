@@ -6,7 +6,7 @@
 #    By: saeed <arabi@iastate.edu>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/08 18:12:31 by saeed             #+#    #+#              #
-#    Updated: 2021/03/08 20:07:35 by saeed            ###   ########.fr        #
+#    Updated: 2021/03/09 11:55:42 by saeed            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,14 +20,14 @@ class PURE_PURSUIT:
     def __init__(self, x, y, yaw, v, w, course):
         # Parameters
         self.k = 0.1  # look forward gain
-        self.Lfc = .7  # [m] look-ahead distance
+        self.Lfc = 1.5  # [m] look-ahead distance
         self.Kp = 1  # speed proportional gain
         self.dt = 0.1  # [s] time tick
         self.WB = 1.5  # [m] wheel base of vehicle
         self.v = 0  # linear_speed
         self.w = 0  # angular_speed
         self.max_linear = 1  # max_linear_speed
-        self.max_angular = 10  # max_angular_speed
+        self.max_angular = 5  # max_angular_speed
         self.x = x
         self.y = y
         self.yaw = yaw
