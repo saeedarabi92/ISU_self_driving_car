@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- load car in simulator -->
+  <include file="$(find gem_gazebo)/launch/gem_vehicle.launch">
+  </include>
+
+    <!-- publish odom to baselink. -->
+    <node name="odom_to_baselink_tf" pkg="gem_control" type="odom_to_baselink_tf.py">
+    </node>
+    
+
+    <!-- path planing module -->
+    <node name="planner" pkg="gem_control" type="path_planner.py" output="screen">
+    </node>
+    
+    <!-- translate Twist to ackermann -->
+    <node name="cmd_vel_to_ackermann_drive" pkg="gem_control" type="cmd_vel_to_ackermann_drive.py" output="screen">
+    </node>
+    
+    <!-- path tracking module -->
+    <node name="path_tracker" pkg="gem_control" type="path_tracker.py" output="screen">
+    </node>
+
+    <!-- mission planning module -->
+    <node name="mission" pkg="gem_control" type="mission.py" output="screen">
+    </node>
+</launch>
