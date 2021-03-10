@@ -34,7 +34,7 @@ def odom_callback(data):
 
     odom = Odometry()
     odom.header.frame_id = '/odom'
-    odom.child_frame_id = 'base_footprint'
+    odom.child_frame_id = '/base_footprint'
     odom.header.stamp = rospy.Time.now()
     odom.pose = data.pose
     odom.pose.pose.position.x = odom.pose.pose.position.x
