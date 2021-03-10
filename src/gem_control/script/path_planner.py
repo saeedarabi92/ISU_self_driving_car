@@ -38,8 +38,8 @@ class PATH_PLANNER():
         # subscribers
         self.sub_odom = rospy.Subscriber(
             '/odom', Odometry, self.callback_odom)
-        self.goal_subscriber = rospy.Subscriber(
-            "/goal", PoseStamped, self.callback_new_goal)
+        self.sub_goal = rospy.Subscriber(
+            "/goal", PoseStamped, self.callback_goal)
         # self.sub_temp = rospy.Subscriber('/topic_temp', Message_temp, self.callback_topic_temp)
         # publishers
         self.pub_path = rospy.Publisher(
@@ -57,7 +57,6 @@ class PATH_PLANNER():
         output:
         1. Path information: an array consists of tupels of referenced values, self.path: [(x1, y1, theta1, v1), (x2, y2, theta2, v2), ...]
         """
-
         # simple_path = SIMPLE_PATH_PLANNER(
         #     self.x_current, self.y_current, self.yaw_current, self.x_goal, self.y_goal, self.yaw_goal)
         # self.path = simple_path.get_path_info()
@@ -77,7 +76,7 @@ class PATH_PLANNER():
         self.x_current = data.pose.pose.position.x
         self.y_current = data.pose.pose.position.y
 
-    def callback_new_goal(self, data):
+    def callback_goal(self, data):
         rospy.loginfo("Getting a new path...")
         qx = data.pose.orientation.x
         qy = data.pose.orientation.y
@@ -90,7 +89,7 @@ class PATH_PLANNER():
         self.y_goal = data.pose.position.y
         self.got_new_goal = True
 
-    def to_marker(self, x, y, theta=0):
+    def to_marker(self, x, y, theta):
         marker = Marker()
         marker.header.frame_id = "/odom"
         marker.header.stamp = rospy.Time.now()
@@ -102,14 +101,14 @@ class PATH_PLANNER():
         marker.pose.orientation.y = quaternion[1]
         marker.pose.orientation.z = quaternion[2]
         marker.pose.orientation.w = quaternion[3]
-        marker.scale.x = 0.1
-        marker.scale.y = 0.1
+        marker.scale.x = 0.3
+        marker.scale.y = 0.05
         marker.scale.z = 0.1
         marker.color.r = 0.0
         marker.color.g = 1.0
         marker.color.b = 0.0
         marker.color.a = 1
-        marker.type = Marker.CUBE
+        marker.type = Marker.ARROW
         marker.action = marker.ADD
         return marker
 
@@ -120,7 +119,8 @@ class PATH_PLANNER():
         while True:
             x = self.path[idx][0]
             y = self.path[idx][1]
-            pose_marker = self.to_marker(x, y)
+            yaw = self.path[idx][2]
+            pose_marker = self.to_marker(x, y, yaw)
             pose_marker.id = pose_id
             path.markers.append(pose_marker)
             pose_id += 1
