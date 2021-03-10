@@ -24,14 +24,14 @@ import numpy as np
 
 
 global goal_list
-goal_list = [(10, 10, 0), (30, 40, np.pi), (40, 0, np.pi), (0, 0, 0)]
+goal_list = [(2, 0, 0), (2, 2, np.pi), (-2, 2, np.pi), (0, 0, 0)]
 
 
 def get_goal(idx):
     goal = PoseStamped()
     goal.header.seq = 1
     goal.header.stamp = rospy.Time.now()
-    goal.header.frame_id = "/odom"
+    goal.header.frame_id = "/map"
     goal.pose.position.x = goal_list[idx][0]
     goal.pose.position.y = goal_list[idx][1]
     goal.pose.position.z = 0.0
@@ -68,7 +68,7 @@ def mission():
     rospy.init_node('mission', anonymous=True)
     rate = rospy.Rate(5)  # 10hz
     goal_idx = 0
-    laps_num = 2
+    laps_num = 10
     rospy.loginfo("Waiting 5 seconds to load all the nodes...!")
     rospy.sleep(5)
     for j in range(laps_num):
@@ -76,14 +76,13 @@ def mission():
             goal = get_goal(i)
             x_g = goal.pose.position.x
             y_g = goal.pose.position.y
-            yaw_g = goal_list[i][2]
             pub.publish(goal)
             distance = distance_to_goal(x, y, x_g, y_g)
             while distance > 1:
                 distance = distance_to_goal(x, y, x_g, y_g)
             print "Approaching to the next goal..."
             rospy.sleep(1)
-    rospy.loginfo("Mission ended. Killing all the ROS nodes...!")
+    rospy.logwarn("Mission ended. Killing all the ROS nodes...!")
     os.system(
         "rosnode kill --all & killall -9 roscore & killall -9 rosmaster & killall -9 rviz & pkill -9 python")
 
