@@ -61,12 +61,19 @@ class PATH_TRACKER():
         self.cmd_v, self.cmd_w = pure_persuit.get_velocity_comands()
 
     def callback_marker(self, data):
-        cx = []
-        cy = []
+        c_x = []
+        c_y = []
+        c_yaw = []
         for marker in data.markers:
-            cx.append(marker.pose.position.x)
-            cy.append(marker.pose.position.y)
-        self.course = [(i, j, None, None) for i, j in zip(cx, cy)]
+            c_x.append(marker.pose.position.x)
+            c_y.append(marker.pose.position.y)
+            qx = marker.pose.orientation.x
+            qy = marker.pose.orientation.y
+            qz = marker.pose.orientation.z
+            qw = marker.pose.orientation.w
+            c_yaw.append(tf.transformations.euler_from_quaternion(
+                (qx, qy, qz, qw))[2])
+        self.course = [(i, j, k, None) for i, j, k in zip(c_x, c_y, c_yaw)]
 
     def callback_odom(self, data):
         qx = data.pose.pose.orientation.x
