@@ -19,13 +19,14 @@ from visualization_msgs.msg import MarkerArray, Marker
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 import tf
+from helper.callback_helper import callback_odom, callback_markerarray
 
 
 class PATH_TRACKER():
 
     def __init__(self):
         # node name
-        rospy.init_node('path_tracker')
+        rospy.init_node('path_tracker', anonymous=False)
         # initial values
         self.x = 0
         self.y = 0
@@ -36,18 +37,37 @@ class PATH_TRACKER():
         self.cmd_v = 0
         self.cmd_w = 0
         # subscribers
-        self.sub_odom = rospy.Subscriber('/odom', Odometry, self.callback_odom)
+        self.sub_odom = rospy.Subscriber(
+            '/odom', Odometry, self.read)
         self.sub_marker = rospy.Subscriber(
-            '/trajectory', MarkerArray, self.callback_marker)
-        # self.sub_temp = rospy.Subscriber('/topic_temp', Message_temp, self.callback_topic_temp)
+            '/trajectory', MarkerArray, self.read)
         # Publishers
         self.pub_cmd_vel = rospy.Publisher("/cmd_vel", Twist, queue_size=5)
         # publishing rate
         self.pub_cmd_vel_rate = 10
-        # self.pub_temp = rospy.Publisher("/topic_temp", Message_temp, queue_size=queue_size_temp)
-        # self.pub_temp = pub_temp_rate
 
-    def tracking_computation(self):
+    def read(self, data):
+        msg_type = str(data._type)
+        if msg_type == 'nav_msgs/Odometry':
+            self.x, self.y, self.yaw, self.v, self.w, self.got_new_odom = callback_odom(
+                data)
+        if msg_type == 'visualization_msgs/MarkerArray':
+            self.course = callback_markerarray(
+                data)
+
+    def publish(self, event=None):
+        if self.course != []:
+            self.computation()
+            cmd = Twist()
+            cmd.linear.x, cmd.angular.z = self.cmd_v, self.cmd_w
+            self.pub_cmd_vel.publish(cmd)
+
+    def run(self):
+        rospy.Timer(rospy.Duration(1. / self.pub_cmd_vel_rate),
+                    self.publish)
+        rospy.spin()
+
+    def computation(self):
         """
         Your code goes here!
         inputs:
@@ -59,53 +79,6 @@ class PATH_TRACKER():
         pure_persuit = PURE_PURSUIT(
             self.x, self.y, self.yaw, self.v, self.w, self.course)
         self.cmd_v, self.cmd_w = pure_persuit.get_velocity_comands()
-
-    def callback_marker(self, data):
-        c_x = []
-        c_y = []
-        c_yaw = []
-        for marker in data.markers:
-            c_x.append(marker.pose.position.x)
-            c_y.append(marker.pose.position.y)
-            qx = marker.pose.orientation.x
-            qy = marker.pose.orientation.y
-            qz = marker.pose.orientation.z
-            qw = marker.pose.orientation.w
-            c_yaw.append(tf.transformations.euler_from_quaternion(
-                (qx, qy, qz, qw))[2])
-        self.course = [(i, j, k, None) for i, j, k in zip(c_x, c_y, c_yaw)]
-
-    def callback_odom(self, data):
-        qx = data.pose.pose.orientation.x
-        qy = data.pose.pose.orientation.y
-        qz = data.pose.pose.orientation.z
-        qw = data.pose.pose.orientation.w
-        quaternion = (qx, qy, qz, qw)
-        euler = tf.transformations.euler_from_quaternion(quaternion)
-        self.yaw = euler[2]
-        self.x = data.pose.pose.position.x
-        self.y = data.pose.pose.position.y
-        self.v = data.twist.twist.linear.x
-        self.w = data.twist.twist.angular.z
-
-    # def callback_topic_temp(self, data):
-    #     self.callback_topic_temp_value = data.data
-
-    # def pub_temp_update(self, event=None):
-        # self.pub_temp_update.publish(self.message)
-
-    def pub_cmd_vel_update(self, event=None):
-        if self.course != []:
-            self.tracking_computation()
-            cmd = Twist()
-            cmd.linear.x, cmd.angular.z = self.cmd_v, self.cmd_w
-            self.pub_cmd_vel.publish(cmd)
-
-    def run(self):
-        rospy.Timer(rospy.Duration(1. / self.pub_cmd_vel_rate),
-                    self.pub_cmd_vel_update)
-        # rospy.Time(rospy.Duration(1./self.pub_temp_rate), self.pub_temp_update)
-        rospy.spin()
 
 
 if __name__ == '__main__':
