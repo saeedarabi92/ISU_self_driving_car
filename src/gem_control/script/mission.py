@@ -21,74 +21,58 @@ import math
 import subprocess
 import os
 import numpy as np
+from helper.general import get_goal, distance_to_goal
+from helper.callback_helper import callback_odom
 
 
-global goal_list
-goal_list = [(2, 0, 0), (2, 2, np.pi), (-2, 2, np.pi), (0, 0, 0)]
+class MISSION():
+    def __init__(self):
+        # node name
+        rospy.init_node('mission', anonymous=False)
+        self.goal_list = [(2, 0, 0), (2, 2, np.pi), (-2, 2, np.pi), (0, 0, 0)]
+        self.laps_num = 1
+        # publishers
+        self.pub_goal = rospy.Publisher('/goal', PoseStamped, queue_size=1)
+        # subscribers
+        self.sub_odom = rospy.Subscriber('/odom', Odometry, self.read)
+        self.pub_goal_rate = 10
 
+    def read(self, data):
+        msg_type = str(data._type)
+        if msg_type == 'nav_msgs/Odometry':
+            self.x_current, self.y_current, self.yaw_current, self.v, self.w, self.got_new_odom = callback_odom(
+                data)
 
-def get_goal(idx):
-    goal = PoseStamped()
-    goal.header.seq = 1
-    goal.header.stamp = rospy.Time.now()
-    goal.header.frame_id = "/map"
-    goal.pose.position.x = goal_list[idx][0]
-    goal.pose.position.y = goal_list[idx][1]
-    goal.pose.position.z = 0.0
-    quaternion = tf.transformations.quaternion_from_euler(
-        0, 0, goal_list[idx][2])
-    goal.pose.orientation.x = quaternion[0]
-    goal.pose.orientation.y = quaternion[1]
-    goal.pose.orientation.z = quaternion[2]
-    goal.pose.orientation.w = quaternion[3]
-    return goal
+    def publish(self, goal):
+        self.pub_goal.publish(goal)
 
+    def run(self):
+        rospy.loginfo("Waiting 5 seconds to load all the nodes...!")
+        rospy.sleep(5)
+        for j in range(self.laps_num):
+            for i in range(len(self.goal_list)):
+                self.computation(i)
+        rospy.logwarn("Mission ended. Killing all the ROS nodes...!")
+        os.system(
+            "rosnode kill --all & killall -9 roscore & killall -9 rosmaster & killall -9 rviz & pkill -9 python")
 
-def odom_callback(data):
-    global x, y, yaw
-    qx = data.pose.pose.orientation.x
-    qy = data.pose.pose.orientation.y
-    qz = data.pose.pose.orientation.z
-    qw = data.pose.pose.orientation.w
-    quaternion = (qx, qy, qz, qw)
-    euler = tf.transformations.euler_from_quaternion(quaternion)
-    yaw = euler[2]
-    x = data.pose.pose.position.x
-    y = data.pose.pose.position.y
-
-
-def distance_to_goal(x_c, y_c, x_g, y_g):
-    return math.sqrt((x_c - x_g)**2 + (y_c - y_g)**2)
-
-
-def mission():
-
-    pub = rospy.Publisher('/goal', PoseStamped, queue_size=1)
-    sub_odom = rospy.Subscriber('/odom', Odometry, odom_callback)
-    rospy.init_node('mission', anonymous=True)
-    rate = rospy.Rate(5)  # 10hz
-    goal_idx = 0
-    laps_num = 10
-    rospy.loginfo("Waiting 5 seconds to load all the nodes...!")
-    rospy.sleep(5)
-    for j in range(laps_num):
-        for i in range(len(goal_list)):
-            goal = get_goal(i)
-            x_g = goal.pose.position.x
-            y_g = goal.pose.position.y
-            pub.publish(goal)
-            distance = distance_to_goal(x, y, x_g, y_g)
-            while distance > 1:
-                distance = distance_to_goal(x, y, x_g, y_g)
-            print "Approaching to the next goal..."
-            rospy.sleep(1)
-    rospy.logwarn("Mission ended. Killing all the ROS nodes...!")
-    os.system(
-        "rosnode kill --all & killall -9 roscore & killall -9 rosmaster & killall -9 rviz & pkill -9 python")
+    def computation(self, i):
+        goal = get_goal(self.goal_list, i)
+        x_goal = goal.pose.position.x
+        y_goal = goal.pose.position.y
+        self.publish(goal)
+        distance = distance_to_goal(
+            self.x_current, self.y_current, x_goal, y_goal)
+        while distance > 1:
+            distance = distance_to_goal(
+                self.x_current, self.y_current, x_goal, y_goal)
+        print "Approaching to the next goal..."
+        rospy.sleep(.5)
 
 
 if __name__ == '__main__':
     try:
-        mission()
+        mission = MISSION()
+        mission.run()
     except rospy.ROSInterruptException:
         pass
