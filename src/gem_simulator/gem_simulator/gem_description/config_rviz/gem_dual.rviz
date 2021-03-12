@@ -50,7 +50,7 @@ Visualization Manager:
         Z: 0
       Plane: XY
       Plane Cell Count: 10
-      Reference Frame: odom
+      Reference Frame: map
       Value: true
     - Alpha: 1
       Class: rviz/RobotModel
@@ -313,89 +313,91 @@ Visualization Manager:
       Frames:
         All Enabled: false
         GPS_link:
-          Value: true
+          Value: false
         IMU_link:
-          Value: true
+          Value: false
         base_footprint:
-          Value: true
+          Value: false
         base_link:
-          Value: true
+          Value: false
         chair_link:
-          Value: true
+          Value: false
         door_link:
-          Value: true
+          Value: false
         front_camera_link:
-          Value: true
+          Value: false
         front_left_emergency_button_link:
-          Value: true
+          Value: false
         front_left_head_light_link:
-          Value: true
+          Value: false
         front_left_turn_light_link:
-          Value: true
+          Value: false
         front_left_wheel_link:
-          Value: true
+          Value: false
         front_rack_link:
-          Value: true
+          Value: false
         front_right_emergency_button_link:
-          Value: true
+          Value: false
         front_right_head_light_link:
-          Value: true
+          Value: false
         front_right_turn_light_link:
-          Value: true
+          Value: false
         front_right_wheel_link:
-          Value: true
+          Value: false
         front_single_camera_link:
-          Value: true
+          Value: false
         front_sonar_link:
-          Value: true
+          Value: false
         left_I_link:
-          Value: true
+          Value: false
         left_antenna_link:
-          Value: true
+          Value: false
         left_blue_outer_link:
-          Value: true
+          Value: false
         left_steering_hinge_link:
-          Value: true
+          Value: false
         map:
-          Value: true
+          Value: false
         odom:
-          Value: true
+          Value: false
         rear_left_emergency_button_link:
-          Value: true
+          Value: false
         rear_left_light_link:
-          Value: true
+          Value: false
         rear_left_stop_light_link:
-          Value: true
+          Value: false
         rear_left_wheel_link:
-          Value: true
+          Value: false
         rear_light_bar_link:
-          Value: true
+          Value: false
         rear_rack_link:
-          Value: true
+          Value: false
         rear_right_emergency_button_link:
-          Value: true
+          Value: false
         rear_right_light_link:
-          Value: true
+          Value: false
         rear_right_stop_light_link:
-          Value: true
+          Value: false
         rear_right_wheel_link:
-          Value: true
+          Value: false
         rear_sonar_link:
-          Value: true
+          Value: false
         right_I_link:
-          Value: true
+          Value: false
         right_antenna_link:
-          Value: true
+          Value: false
         right_blue_outer_link:
-          Value: true
+          Value: false
         right_steering_hinge_link:
-          Value: true
+          Value: false
         top_rack_link:
-          Value: true
+          Value: false
+        utm:
+          Value: false
         velodyne:
-          Value: true
+          Value: false
         velodyne_base_link:
-          Value: true
+          Value: false
       Marker Scale: 1
       Name: TF
       Show Arrows: true
@@ -403,78 +405,80 @@ Visualization Manager:
       Show Names: true
       Tree:
         map:
-          odom:
-            base_footprint:
-              base_link:
-                GPS_link:
+          utm:
+            {}
+        odom:
+          base_footprint:
+            base_link:
+              GPS_link:
+                {}
+              IMU_link:
+                {}
+              chair_link:
+                {}
+              door_link:
+                {}
+              front_camera_link:
+                front_single_camera_link:
                   {}
-                IMU_link:
+              front_left_emergency_button_link:
+                {}
+              front_left_head_light_link:
+                {}
+              front_left_turn_light_link:
+                {}
+              front_rack_link:
+                front_sonar_link:
                   {}
-                chair_link:
+              front_right_emergency_button_link:
+                {}
+              front_right_head_light_link:
+                {}
+              front_right_turn_light_link:
+                {}
+              left_I_link:
+                {}
+              left_antenna_link:
+                {}
+              left_blue_outer_link:
+                {}
+              left_steering_hinge_link:
+                front_left_wheel_link:
                   {}
-                door_link:
+              rear_left_emergency_button_link:
+                {}
+              rear_left_light_link:
+                {}
+              rear_left_stop_light_link:
+                {}
+              rear_left_wheel_link:
+                {}
+              rear_light_bar_link:
+                {}
+              rear_rack_link:
+                rear_sonar_link:
                   {}
-                front_camera_link:
-                  front_single_camera_link:
+              rear_right_emergency_button_link:
+                {}
+              rear_right_light_link:
+                {}
+              rear_right_stop_light_link:
+                {}
+              rear_right_wheel_link:
+                {}
+              right_I_link:
+                {}
+              right_antenna_link:
+                {}
+              right_blue_outer_link:
+                {}
+              right_steering_hinge_link:
+                front_right_wheel_link:
+                  {}
+              top_rack_link:
+                velodyne_base_link:
+                  velodyne:
                     {}
-                front_left_emergency_button_link:
-                  {}
-                front_left_head_light_link:
-                  {}
-                front_left_turn_light_link:
-                  {}
-                front_rack_link:
-                  front_sonar_link:
-                    {}
-                front_right_emergency_button_link:
-                  {}
-                front_right_head_light_link:
-                  {}
-                front_right_turn_light_link:
-                  {}
-                left_I_link:
-                  {}
-                left_antenna_link:
-                  {}
-                left_blue_outer_link:
-                  {}
-                left_steering_hinge_link:
-                  front_left_wheel_link:
-                    {}
-                rear_left_emergency_button_link:
-                  {}
-                rear_left_light_link:
-                  {}
-                rear_left_stop_light_link:
-                  {}
-                rear_left_wheel_link:
-                  {}
-                rear_light_bar_link:
-                  {}
-                rear_rack_link:
-                  rear_sonar_link:
-                    {}
-                rear_right_emergency_button_link:
-                  {}
-                rear_right_light_link:
-                  {}
-                rear_right_stop_light_link:
-                  {}
-                rear_right_wheel_link:
-                  {}
-                right_I_link:
-                  {}
-                right_antenna_link:
-                  {}
-                right_blue_outer_link:
-                  {}
-                right_steering_hinge_link:
-                  front_right_wheel_link:
-                    {}
-                top_rack_link:
-                  velodyne_base_link:
-                    velodyne:
-                      {}
       Update Interval: 0
       Value: true
     - Alpha: 0.5
@@ -514,7 +518,7 @@ Visualization Manager:
       Marker Topic: /trajectory
       Name: MarkerArray
       Namespaces:
-        "": true
+        {}
       Queue Size: 100000
       Value: true
     - Angle Tolerance: 0.10000000149011612
@@ -555,7 +559,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: odom
+    Fixed Frame: map
     Frame Rate: 30
   Name: root
   Tools:
@@ -579,25 +583,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 49.20497512817383
+      Distance: 19.552688598632812
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 7.36730432510376
-        Y: 7.643989086151123
-        Z: 3.6161444187164307
+        X: -0.6227231621742249
+        Y: -1.386088490486145
+        Z: 3.8016674518585205
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.104797124862671
+      Pitch: 1.3197963237762451
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.2130746841430664
+      Yaw: 3.089893341064453
     Saved: ~
 Window Geometry:
   Displays:
