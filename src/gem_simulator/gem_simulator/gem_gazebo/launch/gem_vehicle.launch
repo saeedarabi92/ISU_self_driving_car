@@ -56,10 +56,10 @@
     </node>
 
     <!-- static transform -->
-    <node pkg="tf"
+    <!-- <node pkg="tf"
         type="static_transform_publisher"
         name="map_to_odom"
-        args="0 0 0 0 0 0 map odom 100" />
+        args="0 0 0 0 0 0 map odom 100" /> -->
     
     <!-- <node pkg="tf" 
         type="static_transform_publisher" 
@@ -72,8 +72,6 @@
     <!--
     <include file="$(find gem_pcl)/launch/gem_pcl.launch" />
     -->
-
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find gem_description)/config_rviz/gem.rviz" />
     
   </group>
 
