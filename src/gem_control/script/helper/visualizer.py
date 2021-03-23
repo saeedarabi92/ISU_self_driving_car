@@ -3,7 +3,7 @@ import rospy
 import tf
 
 
-def pose_to_marker(x, y, theta, frame):
+def pose_to_marker(x, y, frame, theta = 0):
     marker = Marker()
     marker.header.frame_id = frame  # "/odom"
     marker.header.stamp = rospy.Time.now()
@@ -15,14 +15,14 @@ def pose_to_marker(x, y, theta, frame):
     marker.pose.orientation.y = quaternion[1]
     marker.pose.orientation.z = quaternion[2]
     marker.pose.orientation.w = quaternion[3]
-    marker.scale.x = 0.3
+    marker.scale.x = 0.05
     marker.scale.y = 0.05
-    marker.scale.z = 0.1
+    marker.scale.z = 0.05
     marker.color.r = 0.0
     marker.color.g = 1.0
     marker.color.b = 0.0
     marker.color.a = 1
-    marker.type = Marker.ARROW
+    marker.type = Marker.CUBE
     marker.action = marker.ADD
     return marker
 
@@ -35,7 +35,7 @@ def path_to_marker(path):
         x = path[idx][0]
         y = path[idx][1]
         yaw = path[idx][2]
-        pose_marker = pose_to_marker(x, y, yaw, "/odom")
+        pose_marker = pose_to_marker(x, y, theta = yaw, frame = "/map")
         pose_marker.id = pose_id
         Path.markers.append(pose_marker)
         pose_id += 1
