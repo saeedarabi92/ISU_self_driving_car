@@ -27,14 +27,15 @@ from helper.callback_helper import callback_odom
 
 class MISSION():
     def __init__(self):
-        # node name
+        #node name
         rospy.init_node('mission', anonymous=False)
-        self.goal_list = [(2, 0, 0), (2, 2, np.pi), (-2, 2, np.pi), (0, 0, 0)]
-        self.laps_num = 1
-        # publishers
+        self.goal_list = [(30, 0, 0), (15, 6, -np.pi), (-5, 6, -np.pi), (0, 0, 0)]
+        #self.goal_list = [(0, 10, -np.pi)]
+        self.laps_num = 10
+        #publishers
         self.pub_goal = rospy.Publisher('/goal', PoseStamped, queue_size=1)
-        # subscribers
-        self.sub_odom = rospy.Subscriber('/odom', Odometry, self.read)
+        #subscribers
+        self.sub_odom = rospy.Subscriber('/odometry/filtered_map', Odometry, self.read)
         self.pub_goal_rate = 10
 
     def read(self, data):

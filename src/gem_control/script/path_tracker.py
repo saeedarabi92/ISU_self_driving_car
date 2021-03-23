@@ -38,7 +38,7 @@ class PATH_TRACKER():
         self.cmd_w = 0
         # subscribers
         self.sub_odom = rospy.Subscriber(
-            '/odom', Odometry, self.read)
+            '/odometry/filtered_map', Odometry, self.read)
         self.sub_marker = rospy.Subscriber(
             '/trajectory', MarkerArray, self.read)
         # Publishers
@@ -57,7 +57,7 @@ class PATH_TRACKER():
 
     def publish(self, event=None):
         if self.course != []:
-            self.computation()
+            self.compute()
             cmd = Twist()
             cmd.linear.x, cmd.angular.z = self.cmd_v, self.cmd_w
             self.pub_cmd_vel.publish(cmd)
@@ -67,7 +67,7 @@ class PATH_TRACKER():
                     self.publish)
         rospy.spin()
 
-    def computation(self):
+    def compute(self):
         """
         Your code goes here!
         inputs:

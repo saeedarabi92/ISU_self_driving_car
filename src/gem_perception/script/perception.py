@@ -58,7 +58,7 @@ class PERCEPTION():
             self.bboxes_3d = callback_detected_objects(data)
 
     def publish(self, event=None):
-        self.computation()
+        self.compute()
         self.pub_point.publish(self.clusters)
         self.pub_detected_objects.publish(self.detected_objects)
         self.pub_detected_objects_3d_bbox.publish(
@@ -70,7 +70,7 @@ class PERCEPTION():
                     self.publish)
         rospy.spin()
 
-    def computation(self):
+    def compute(self):
         """
         Your code goes here!
         inputs:
@@ -86,6 +86,8 @@ class PERCEPTION():
 if __name__ == '__main__':
     try:
         perception = PERCEPTION()
+        rospy.loginfo("Perception: Waiting for 5 sec. to load the all the files")
+        rospy.sleep(5)
         perception.run()
     except rospy.ROSInterruptException:
         pass
