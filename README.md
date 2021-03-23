@@ -14,7 +14,8 @@
 </p> -->
 
 ---
-
+##### Checkout to _saeed_dev_ branch for the implementations. 
+---
 # TODO:
 
 - [ ] Fix the battery issue of the car
@@ -28,9 +29,9 @@
   - [x]   Setting up a plane world gazebo simulation
   - [x]   Spawning the car representative (simple ackerman steering model or the actual GEM polaris model)
   - [x]   Testing the simulator by publishing the throttle and steering commands
-  - [ ]   Adding GPS plugin in the Gazebo
-  - [ ]   Adding IMU plugin in the Gazebo
-  - [ ]   Sensor fusion for localization
-  - [ ]   Adding the camera model
+  - [x]   Adding GPS plugin in the Gazebo
+  - [x]   Adding IMU plugin in the Gazebo
+  - [x]   Sensor fusion for localization
+  - [x]   Adding the camera model
   - [x]   Adding the Lidar model
   - [ ]   Correct the vehicle model
