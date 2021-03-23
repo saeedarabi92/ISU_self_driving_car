@@ -9,9 +9,8 @@
     <img width="200" height="175" src="images/reactor.png">
 </p>
 
- <!-- <p align="center">
-  <img width="460" height="360" src="images/IMG_6933.JPG">
-</p> -->
+---
+##### Checkout to _saeed_dev_ branch for the implementations. 
 
 ---
 
@@ -24,12 +23,12 @@
   - [ ]    Testing the joystick commands and ensure their correctness (Acceleration/ Deceleration, steering)
   - [ ]    Checking the CAN messages and confirming their correctness
 
-- [ ]   Setting up gazebo simulation
-  - [ ]   Setting up a plane world gazebo simulation
-  - [ ]   Spawning the car representative (simple ackerman steering model or the actual GEM polaris model)
-  - [ ]   Testing the simulator by publishing the throttle and steering commands
-  - [ ]   Adding GPS plugin in the Gazebo
-  - [ ]   Adding IMU plugin in the Gazebo
-  - [ ]   Sensor fusion for localization
-  - [ ]   Adding the camera model
+- [x]   Setting up gazebo simulation
+  - [x]   Setting up a plane world gazebo simulation
+  - [x]   Spawning the car representative (simple ackerman steering model or the actual GEM polaris model)
+  - [x]   Testing the simulator by publishing the throttle and steering commands
+  - [x]   Adding GPS plugin in the Gazebo
+  - [x]   Adding IMU plugin in the Gazebo
+  - [x]   Sensor fusion for localization
+  - [x]   Adding the camera model
   - [ ]   Adding the Lidar model
