@@ -1,6 +1,10 @@
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, PointStamped
 import tf
+import rospy
+import numpy as np
+from std_msgs.msg import Header
+
 
 
 def callback_pose(data):
@@ -49,4 +53,22 @@ def callback_markerarray(data):
             (qx, qy, qz, qw))[2])
     return [(i, j, k, None) for i, j, k in zip(c_x, c_y, c_yaw)]
 
-    # self.course = [(i, j, k, None) for i, j, k in zip(c_x, c_y, c_yaw)]
+
+def callback_detected_objects_to_obstacle(data, listener):
+    obstacle_x = []
+    obstacle_y = []
+    obstacle_radius = []
+    listener.waitForTransform("/velodyne",
+                         "/map", rospy.Time(0), rospy.Duration(5.0))
+    for marker in data.markers:
+        point_msg = PointStamped()
+        point_msg.header.frame_id = '/velodyne'
+        point_msg.point.x = marker.pose.position.x
+        point_msg.point.y = marker.pose.position.y
+        point_msg.point.z = 0
+        transformed_coord = listener.transformPoint('/map', point_msg)      
+        obstacle_x.append(transformed_coord.point.x)
+        obstacle_y.append(transformed_coord.point.y)
+        # print "x: ", obstacle_x[-1], " y: ", obstacle_y[-1]
+        obstacle_radius.append( np.sqrt(marker.scale.x ** 2 + marker.scale.y ** 2) * 5)
+    return [(i, j, k) for i, j, k in zip(obstacle_x, obstacle_y, obstacle_radius)]
