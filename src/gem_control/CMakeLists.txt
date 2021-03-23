@@ -10,6 +10,20 @@ project(gem_control)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  diagnostic_msgs
+  diagnostic_updater
+  geographic_msgs
+  geometry_msgs
+  message_filters
+  message_generation
+  nav_msgs
+  roscpp
+  roslint
+  sensor_msgs
+  std_msgs
+  tf2
+  tf2_geometry_msgs
+  tf2_ros
 )
 
 ## System dependencies are found with CMake's conventions
@@ -133,6 +147,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/gem_control_node.cpp)
+add_executable(tf_broadcaster src/tf_broadcaster.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -148,7 +163,7 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-
+target_link_libraries(tf_broadcaster ${catkin_LIBRARIES})
 #############
 ## Install ##
 #############
