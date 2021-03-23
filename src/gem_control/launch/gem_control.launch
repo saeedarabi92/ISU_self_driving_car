@@ -2,13 +2,16 @@
 <launch>
 
     <!-- load car in simulator -->
-  <include file="$(find gem_gazebo)/launch/gem_vehicle.launch">
-  </include>
+    <include file="$(find gem_gazebo)/launch/gem_vehicle.launch">
+    </include>
+  
+    <!-- load localization module -->
+    <include file="$(find gem_control)/launch/localization.launch">
+    </include>
 
     <!-- publish odom to baselink. -->
-    <node name="odom_to_baselink_tf" pkg="gem_control" type="odom_to_baselink_tf.py">
-    </node>
-    
+    <!-- <node name="odom_to_baselink_tf" pkg="gem_control" type="odom_to_baselink_tf.py"> -->
+    <!-- </node> -->
 
     <!-- path planing module -->
     <node name="planner" pkg="gem_control" type="path_planner.py" output="screen">
@@ -22,7 +25,15 @@
     <node name="path_tracker" pkg="gem_control" type="path_tracker.py" output="screen">
     </node>
 
+    <!-- perception module -->
+    <node name="perception" pkg="gem_perception" type="perception.py" output="screen">
+    </node>
+
     <!-- mission planning module -->
     <node name="mission" pkg="gem_control" type="mission.py" output="screen">
     </node>
+    
+    <!-- rviz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find gem_description)/config_rviz/gem.rviz" />
+
 </launch>
