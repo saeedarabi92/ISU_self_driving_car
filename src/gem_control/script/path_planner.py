@@ -19,9 +19,11 @@ from visualization_msgs.msg import MarkerArray, Marker
 import tf
 from nav_msgs.msg import Odometry
 import math
-from helper.path_planning_helper import SIMPLE_PATH_PLANNER, DUBINS_PATH_PLANNER
-from helper.callback_helper import callback_odom, callback_pose
+from helper.path_planning_helper import SIMPLE_PATH_PLANNER, DUBINS_PATH_PLANNER, RRTStarDubins
+from helper.callback_helper import callback_odom, callback_pose, callback_detected_objects_to_obstacle
 from helper.visualizer import path_to_marker, pose_to_marker
+from gem_perception.msg import DetectedObjectsArray, DetectedObject
+# from gem_perception.script.helper.callback_helper import callback_detected_objects
 
 
 class PATH_PLANNER():
@@ -38,11 +40,15 @@ class PATH_PLANNER():
         self.path = []
         self.got_new_goal = False
         self.got_new_odom = False
+        self.obstacle_list = []
+        self.listener = tf.TransformListener()
         # subscribers
         self.sub_odom = rospy.Subscriber(
-            '/odom', Odometry, self.read)
+            '/odometry/filtered_map', Odometry, self.read)
         self.sub_goal = rospy.Subscriber(
             "/goal", PoseStamped, self.read)
+        self.sub_detected_objects_3d_bbox = rospy.Subscriber(
+            "/detected_objects_3d_bbox", MarkerArray, self.read)
         # publishers
         self.pub_path = rospy.Publisher(
             "/trajectory", MarkerArray, queue_size=5)
@@ -54,13 +60,17 @@ class PATH_PLANNER():
         if msg_type == 'nav_msgs/Odometry':
             self.x_current, self.y_current, self.yaw_current, self.v, self.w, self.got_new_odom = callback_odom(
                 data)
+        if msg_type == 'visualization_msgs/MarkerArray':
+            self.obstacle_list = callback_detected_objects_to_obstacle(
+                data, self.listener)
+            print "self.obstacle_list", self.obstacle_list
         if msg_type == 'geometry_msgs/PoseStamped':
             self.x_goal, self.y_goal, self.yaw_goal, self.got_new_goal = callback_pose(
                 data)
 
     def publish(self, event=None):
         if self.got_new_goal:
-            self.computation()
+            self.compute()
             path = path_to_marker(self.path)
             self.pub_path.publish(path)
             self.got_new_goal = False
@@ -70,7 +80,7 @@ class PATH_PLANNER():
                     self.publish)
         rospy.spin()
 
-    def computation(self):
+    def compute(self):
         """
         Your code goes here!
         inputs:
@@ -78,18 +88,30 @@ class PATH_PLANNER():
         output:
         1. Path information: an array consists of tupels of referenced values, self.path: [(x1, y1, theta1, v1), (x2, y2, theta2, v2), ...]
         """
+        # ------------------------Simple path planner---------------------------------------
+
         # simple_path = SIMPLE_PATH_PLANNER(
         #     self.x_current, self.y_current, self.yaw_current, self.x_goal, self.y_goal, self.yaw_goal)
         # self.path = simple_path.get_path_info()
-
+        
+        #-------------------------Dubins path planner---------------------------------------
         dubins_path = DUBINS_PATH_PLANNER(
             self.x_current, self.y_current, self.yaw_current, self.x_goal, self.y_goal, self.yaw_goal)
         self.path = dubins_path.get_path_info()
 
 
+        #-------------------------RRTstar path planner----------------------------------------------------------
+        # rrtstartdubin = RRTStarDubins(
+        #     [self.x_current, self.y_current, self.yaw_current], [self.x_goal, self.y_goal, self.yaw_goal], rand_area=[0.0, 20.0], obstacle_list=self.obstacle_list)
+        # self.path = rrtstartdubin.get_path_info()
+
+
 if __name__ == '__main__':
     try:
         path_planner = PATH_PLANNER()
+        rospy.loginfo(
+            "Perception: Waiting for 7 sec. to load the all the files")
+        rospy.sleep(7)
         path_planner.run()
     except rospy.ROSInterruptException:
         pass
