@@ -5,16 +5,20 @@
   <arg name="cmd_timeout" default="0.5"/>
   <arg name="paused" default="false"/>
   <arg name="use_sim_time" default="true"/>
-  <arg name="gui" default="false"/>
+  <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
   <arg name="verbose" default="false"/>
   <arg name="world_name" default="empty.world"/>
 
   <!-- Vehicle pose -->
+  <!-- <arg name="x" default="50.0"/>
+  <arg name="y" default="-103.0"/>
+  <arg name="z" default="1.0"/>
+  <arg name="yaw" default="0.0"/> -->
   <arg name="x" default="0.0"/>
   <arg name="y" default="0.0"/>
-  <arg name="z" default="0.0"/>
+  <arg name="z" default="0.5"/>
   <arg name="yaw" default="0.0"/>
 
   <include file="$(find gem_description)/launch/gem_vehicle.launch">

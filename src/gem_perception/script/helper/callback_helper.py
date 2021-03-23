@@ -158,7 +158,6 @@ def pcl_to_3d_bbox(cluster_indices, extracted_objects):
 
     return detected_objects
 
-
 def callback_detected_objects(data):
     detection_bbox_3d = MarkerArray()
     for index, cluster in enumerate(data.objects):
@@ -169,14 +168,12 @@ def callback_detected_objects(data):
             x_l.append(idx[0])
             y_l.append(idx[1])
             z_l.append(idx[2])
-
         x_center = sum(x_l) / len(x_l)
         y_center = sum(y_l) / len(y_l)
         z_center = sum(z_l) / len(z_l)
         x_scale = abs(max(x_l) - min(x_l))
         y_scale = abs(max(y_l) - min(y_l))
         z_scale = abs(max(z_l) - min(z_l))
-
         detection_marker = detection_to_marker(x_center, y_center, z_center,
                             x_scale, y_scale, z_scale, 0, "velodyne")
         detection_marker.id = index
