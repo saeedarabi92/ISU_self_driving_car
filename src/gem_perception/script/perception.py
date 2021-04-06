@@ -18,8 +18,9 @@ import math
 from sensor_msgs.msg import PointCloud2, PointField, Image
 from gem_perception.msg import DetectedObjectsArray, DetectedObject
 from helper.plc_helper import *
-from helper.callback_helper import *
 import sensor_msgs.point_cloud2 as pc2
+from vision_msgs.msg import ObjectHypothesisWithPose, Detection3DArray, Detection3D, Detection2DArray
+from visualization_msgs.msg import MarkerArray
 
 
 class PERCEPTION():
@@ -31,57 +32,51 @@ class PERCEPTION():
         self.clusters = None
         self.detected_objects = None
         self.bboxes_3d = None
+        self.bboxes_2d = None
         # subscribers
-        self.sub_lidar = rospy.Subscriber(
-            '/velodyne_points', PointCloud2, self.read)
-        self.sub_image = rospy.Subscriber(
-            "/gem/front_single_camera/front_single_camera/image_raw", Image, self.read)
-        self.sub_image = rospy.Subscriber(
-            "/detected_objects", DetectedObjectsArray, self.read)
+        self.sub_3d_objects = rospy.Subscriber(
+            "/3d_objects", DetectedObjectsArray, self.read)
+        self.sub_2d_objects = rospy.Subscriber("/2d_objects", Detection2DArray, self.read)
         # publishers
-        self.pub_detected_objects_3d_bbox = rospy.Publisher(
-            "/detected_objects_3d_bbox", MarkerArray, queue_size=1)
-        self.pub_detected_objects = rospy.Publisher(
-            "/detected_objects", DetectedObjectsArray, queue_size=1)
-        self.pub_point = rospy.Publisher(
-            "/cluster", PointCloud2, queue_size=1)
+        self.fused_objects_debug = rospy.Publisher(
+            "/fused_objects_debug", MarkerArray, queue_size=1)
+        self.fused_objects = rospy.Publisher(
+            "/fused_objects", Detection3DArray, queue_size=1)
         # publishing rate
         self.pub_rate = 10
 
-
     def read(self, data):
         msg_type = str(data._type)
-        if msg_type == 'sensor_msgs/PointCloud2':  
-            self.pcl_clouds = callback_pcl(data)
-            # self.detected_objects, self.clusters = callback_pcl(data)
         if msg_type == "gem_perception/DetectedObjectsArray":
-            self.bboxes_3d = callback_detected_objects(data)
+            self.bboxes_3d = data
+        if msg_type == "vision_msgs/Detection2DArray":
+            self.bboxes_2d = data
 
     def publish(self, event=None):
         self.compute()
-        self.pub_point.publish(self.clusters)
-        self.pub_detected_objects.publish(self.detected_objects)
-        self.pub_detected_objects_3d_bbox.publish(
-            self.bboxes_3d)
-
+        # self.fused_objects_debug.publish(self.bbox_3d_fused_debug)
+        # self.fused_objects.publish(self.bbox_3d_fused)
+        pass
 
     def run(self):
         rospy.Timer(rospy.Duration(1. / self.pub_rate),
                     self.publish)
         rospy.spin()
 
+
     def compute(self):
         """
         Your code goes here!
         inputs:
-        1. data with type "pcl._pcl.PointCloud_PointXYZRGB",  (the point cloud after preprocessing)
+        1. 2d bbox array
+        2. 3d bbox array
         output:
-        1. Detected objects, pcl point cloud 
-        2. Detected objects, ros point cloud 
+        1. 3d bbox array 
+        2. 3d bbox marker array 
         """
-        self.clusters, self.detected_objects = detection_using_pointcloud(self.pcl_clouds)
-        # print(self.detected_objects)
-        
+        # self.bbox_3d_fused = fuse_detections(self.bboxes_3d, self.bboxes_2d)
+        # self.bbox_3d_fused_debug = fused_detections_debug(self.bbox_3d_fused)
+        pass
 
 if __name__ == '__main__':
     try:
