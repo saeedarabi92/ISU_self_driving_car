@@ -158,9 +158,9 @@ def pcl_to_3d_bbox(cluster_indices, extracted_objects):
 
     return detected_objects
 
-def callback_detected_objects(data):
+def callback_detected_objects_3d(data):
     detection_bbox_3d = MarkerArray()
-    for index, cluster in enumerate(data.objects):
+    for index, cluster in enumerate(data):
         x_l = []
         y_l = []
         z_l = []
@@ -180,6 +180,10 @@ def callback_detected_objects(data):
         detection_bbox_3d.markers.append(detection_marker)
     return detection_bbox_3d
 
+
+def callback_detected_objects_2d(data):
+    
+    pass
 
 def detection_to_marker(x, y, z, x_scale, y_scale, z_scale, theta, frame):
     marker = Marker()
